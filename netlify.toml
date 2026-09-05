@@ -1,0 +1,17 @@
+[build]
+  publish = "."
+
+# Proxy all /api requests to Render backend
+# Once deployed on Render, replace YOUR_RENDER_SERVICE with your actual Render URL
+# Example: https://voyager-erp-api.onrender.com/api/:splat
+[[redirects]]
+  from = "/api/*"
+  to = "https://YOUR_RENDER_SERVICE.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+# Fallback for standard HTML navigation
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

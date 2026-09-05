@@ -1,0 +1,5 @@
+# Proxy /api to Render backend
+/api/*  https://YOUR_RENDER_SERVICE.onrender.com/api/:splat  200!
+
+# SPA fallback
+/*      /index.html                                          200

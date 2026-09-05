@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>New Ticket — Voyager ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="assets/css/design-system.css" rel="stylesheet" />
+<link href="assets/css/app.css" rel="stylesheet" />
+</head><body>
+<header class="app-topnav" id="shell-topnav"></header>
+<div class="app-body">
+  <aside class="app-sidebar" id="shell-sidebar"></aside>
+  <main class="app-main" style="max-width:1100px;">
+    <h1 style="font-size:1.15rem;" id="page-title">New Airline Ticket</h1>
+    <p class="text-muted-custom">Invoice, booking reference and per-ticket fare breakup. Posts an auto-generated GL entry on save.</p>
+
+    <div class="ticket-wizard-crumbs" id="wizard-crumbs">
+      <span class="wc-step active" data-step="1"><span class="wc-num">1</span> Booking Details</span>
+      <span class="wc-arrow">→</span>
+      <span class="wc-step" data-step="2"><span class="wc-num">2</span> Ticket Lines</span>
+    </div>
+
+    <form id="ticket-form" class="card-glass card-pad" style="margin-top:0.7rem;">
+
+      <div id="wizard-step-1">
+      <div class="entry-grid">
+        <div><label class="field-label">Invoice Number</label><input class="form-control-custom" id="invoice_number" maxlength="20" required /><div class="field-hint" id="invoice_number_hint"></div></div>
+        <div><label class="field-label">Invoice Date</label>
+          <div class="date-group" id="invoice_date">
+            <input class="dg-dd" inputmode="numeric" maxlength="2" placeholder="dd" />
+            <span class="dg-sep">-</span>
+            <input class="dg-mm" inputmode="numeric" maxlength="2" placeholder="mm" />
+            <span class="dg-sep">-</span>
+            <input class="dg-yyyy" inputmode="numeric" maxlength="4" placeholder="yyyy" />
+          </div>
+          <div class="field-hint" id="invoice_date_hint"></div>
+        </div>
+        <div><label class="field-label">Invoice Type</label><select class="form-control-custom" id="invoice_type"></select></div>
+        <div><label class="field-label">Booking Mode</label><div class="computed-field" id="booking_mode"></div></div>
+        <div><label class="field-label">Booking Type</label><select class="form-control-custom" id="booking_type"></select></div>
+        <div><label class="field-label">Booking Status</label><select class="form-control-custom" id="booking_status"></select></div>
+        <div><label class="field-label">Customer Name</label><input class="form-control-custom" id="customer" list="customer-options" placeholder="Type to search…" autocomplete="off" required /><datalist id="customer-options"></datalist><div class="field-hint" id="customer_hint"></div></div>
+        <div><label class="field-label">Customer Code</label><div class="computed-field" id="customer_code">—</div></div>
+        <div style="grid-column: span 2; display:flex; align-items:flex-end; gap:0.5rem;">
+          <div style="flex:1;"><label class="field-label">Customer Address</label><div class="computed-field" id="customer_address" style="min-height:40px;">—</div></div>
+          <div style="flex:1;"><label class="field-label">Customer GST/TRN No</label><div class="computed-field" id="customer_gst" style="min-height:40px;">—</div></div>
+        </div>
+        <div><label class="field-label">Travel Type</label><select class="form-control-custom" id="travel_type"></select></div>
+        <div><label class="field-label">User Name</label><select class="form-control-custom" id="user_name"></select></div>
+        <div><label class="field-label">Currency</label><div class="computed-field" id="currency">—</div></div>
+        <div><label class="field-label">ROE</label><input class="form-control-custom" type="number" id="roe" min="0" step="0.0001" placeholder="1.0000" /></div>
+        <div><label class="field-label">Booking Given By</label><input class="form-control-custom" id="booking_given_by" maxlength="25" /></div>
+        <div><label class="field-label">Booking Reference</label><input class="form-control-custom" id="booking_reference" required /><div class="field-hint" id="booking_reference_hint"></div></div>
+        <div><label class="field-label">Booking Ref Date</label>
+          <div class="date-group" id="booking_ref_date">
+            <input class="dg-dd" inputmode="numeric" maxlength="2" placeholder="dd" />
+            <span class="dg-sep">-</span>
+            <input class="dg-mm" inputmode="numeric" maxlength="2" placeholder="mm" />
+            <span class="dg-sep">-</span>
+            <input class="dg-yyyy" inputmode="numeric" maxlength="4" placeholder="yyyy" />
+          </div>
+          <div class="field-hint" id="booking_ref_date_hint"></div>
+        </div>
+        <div><label class="field-label">Airline PNR</label><input class="form-control-custom" id="airline_pnr_header" maxlength="13" /></div>
+        <div><label class="field-label">GDS PNR</label><input class="form-control-custom" id="gds_pnr_header" maxlength="13" /></div>
+        <div><label class="field-label">Supplier</label><input class="form-control-custom" id="supplier" list="supplier-options" placeholder="Type to search…" autocomplete="off" required /><datalist id="supplier-options"></datalist><div class="field-hint" id="supplier_hint"></div></div>
+        <div><label class="field-label">Office ID</label><input class="form-control-custom" id="office_id" placeholder="e.g. OFF-001" /></div>
+        <div><label class="field-label">Payment Mode</label><select class="form-control-custom" id="payment_mode"></select></div>
+        <div><label class="field-label">Airline Category</label><select class="form-control-custom" id="airline_category"></select></div>
+      </div>
+      <div class="entry-actions">
+        <a href="tickets.html" class="btn-outline-brand" id="cancel-link">Cancel</a>
+        <button type="button" class="btn-brand" id="next-step-btn">Next: Ticket Lines →</button>
+      </div>
+      </div>
+
+      <div id="wizard-step-2" style="display:none;">
+      <div id="ticket-lines"></div>
+      <div style="margin:0.6rem 0 1.2rem;">
+        <button type="button" class="btn-outline-brand" id="add-line-btn">+ Add Ticket Line</button>
+      </div>
+
+      <div class="entry-grid" style="border-top:1px solid var(--color-border); padding-top:1rem;">
+        <div><label class="field-label">Invoice Total (all lines)</label><div class="computed-field" id="invoice_total" style="font-size:1.1rem;">—</div></div>
+      </div>
+
+      <div class="entry-actions">
+        <button type="button" class="btn-outline-brand" id="back-step-btn">← Back</button>
+        <button type="submit" class="btn-brand" id="submit-btn">Save Ticket</button>
+      </div>
+      </div>
+    </form>
+  </main>
+</div>
+
+<template id="ticket-line-template">
+  <div class="ticket-line card-flat" style="border:1px solid var(--color-border); border-radius:8px; padding:16px; margin-bottom:14px; position:relative;">
+    <button type="button" class="btn-outline-brand remove-line-btn" style="position:absolute; top:12px; right:12px; padding:0.3rem 0.6rem; font-size:0.78rem;">Remove</button>
+    <div class="entry-grid">
+      <div><label class="field-label">Airline Code</label><input class="form-control-custom line-airline-code" maxlength="3" placeholder="e.g. 6E" /></div>
+      <div><label class="field-label">Airline Name</label><input class="form-control-custom line-airline-name" placeholder="e.g. IndiGo" /></div>
+      <div><label class="field-label">Ticket Number</label><input class="form-control-custom line-ticket-no" required /><div class="field-hint line-ticket-no-hint"></div></div>
+      <div><label class="field-label">Pax Name</label><input class="form-control-custom line-pax-name" maxlength="30" required /></div>
+      <div><label class="field-label">Pax Type</label><select class="form-control-custom line-pax-type"></select></div>
+      <div><label class="field-label">Sector</label><input class="form-control-custom line-sector" placeholder="e.g. MAA-DXB-MAA" /></div>
+      <div><label class="field-label">Flight No</label><input class="form-control-custom line-flight-no" placeholder="e.g. 6E 1407" /></div>
+      <div><label class="field-label">Travel Date</label>
+        <div class="date-group line-travel-date">
+          <input class="dg-dd" inputmode="numeric" maxlength="2" placeholder="dd" />
+          <span class="dg-sep">-</span>
+          <input class="dg-mm" inputmode="numeric" maxlength="2" placeholder="mm" />
+          <span class="dg-sep">-</span>
+          <input class="dg-yyyy" inputmode="numeric" maxlength="4" placeholder="yyyy" />
+        </div>
+      </div>
+    </div>
+
+    <div class="entry-section-title" style="font-size:0.72rem; margin:14px 0 8px;">Fare breakup</div>
+    <div class="entry-grid">
+      <div><label class="field-label">Basic Fare</label><input class="form-control-custom line-calc line-basic-fare" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">YQ</label><input class="form-control-custom line-calc line-yq" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">YR</label><input class="form-control-custom line-calc line-yr" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">K3 Tax</label><input class="form-control-custom line-calc line-k3" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">Tax and Others</label><input class="form-control-custom line-calc line-tax-others" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">Seat</label><input class="form-control-custom line-calc line-seat" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">Meal</label><input class="form-control-custom line-calc line-meal" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">Baggage</label><input class="form-control-custom line-calc line-baggage" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">Other SSR</label><input class="form-control-custom line-calc line-other-ssr" type="number" value="0" min="0" step="0.01" /></div>
+    </div>
+
+    <div class="entry-section-title" style="font-size:0.72rem; margin:14px 0 8px;">Customer discount</div>
+    <div class="entry-grid">
+      <div><label class="field-label">Cust Discount On</label><select class="form-control-custom line-disc-on"></select></div>
+      <div><label class="field-label">Cust Discount Type</label><select class="form-control-custom line-disc-type"></select></div>
+      <div><label class="field-label disc-value-label">Discount</label><input class="form-control-custom line-calc line-disc-value" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">Cust Discount (computed)</label><div class="computed-field line-disc-computed">0.00</div></div>
+      <div><label class="field-label">TDS %</label><input class="form-control-custom line-calc line-tds-per" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">TDS Amount (computed)</label><div class="computed-field line-tds-computed">0.00</div></div>
+    </div>
+
+    <div class="entry-section-title" style="font-size:0.72rem; margin:14px 0 8px;">Markup &amp; service fee</div>
+    <div class="entry-grid">
+      <div><label class="field-label">Markup</label><input class="form-control-custom line-calc line-markup" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">Addl Markup</label><input class="form-control-custom line-calc line-addl-markup" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">Service Fee</label><input class="form-control-custom line-calc line-service-fee" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">Addl Service Fee</label><input class="form-control-custom line-calc line-addl-service-fee" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">GST %</label><input class="form-control-custom line-calc line-gst-pct" type="number" value="0" min="0" step="0.01" /></div>
+      <div><label class="field-label">GST Amount (computed)</label><div class="computed-field line-gst-computed">0.00</div></div>
+      <div><label class="field-label">Total Amount (computed)</label><div class="computed-field line-total-computed" style="font-weight:700; color:var(--color-teal);">0.00</div></div>
+    </div>
+  </div>
+</template>
+
+<script src="assets/js/hardcode.js"></script>
+<script src="assets/js/mock-data.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/shell.js?v=6"></script>
+<script src="assets/js/entry-common.js"></script>
+<script src="assets/js/page-ticket-entry.js"></script>
+</body></html>
