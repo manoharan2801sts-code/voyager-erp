@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Trial Balance — Voyager ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="assets/css/design-system.css" rel="stylesheet" />
+<link href="assets/css/app.css" rel="stylesheet" />
+</head><body>
+<header class="app-topnav" id="shell-topnav"></header>
+<div class="app-body">
+  <aside class="app-sidebar" id="shell-sidebar"></aside>
+  <main class="app-main">
+    <h1 style="font-size:1.15rem;">Trial Balance</h1>
+    <p class="text-muted-custom">Net debit/credit position of every postable ledger, computed live from voucher lines.</p>
+    <div class="card-glass table-card" style="margin-top:0.7rem;">
+      <table>
+        <thead><tr><th>Code</th><th>Account</th><th>Type</th><th style="text-align:right;">Debit</th><th style="text-align:right;">Credit</th></tr></thead>
+        <tbody id="tb-body"><tr><td colspan="5"><div class="skeleton" style="height:18px;"></div></td></tr></tbody>
+        <tfoot id="tb-foot"></tfoot>
+      </table>
+    </div>
+  </main>
+</div>
+<script src="assets/js/hardcode.js"></script>
+<script src="assets/js/mock-data.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/entry-common.js"></script>
+<script src="assets/js/drilldown.js"></script>
+<script src="assets/js/shell.js?v=6"></script>
+<script src="assets/js/page-reports.js"></script>
+</body></html>

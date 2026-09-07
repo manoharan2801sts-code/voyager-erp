@@ -2,4 +2,4 @@
 /api/*  https://voyager-erp.onrender.com/api/:splat  200!
 
 # SPA fallback
-/*      /index.html                                          200
+/*      /index.html                                   200
