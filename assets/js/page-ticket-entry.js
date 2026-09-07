@@ -25,8 +25,9 @@
   // ============================================================
   // Part 1/2 reference data (real backend for customers/suppliers)
   // ============================================================
-  const CUSTOMERS_API = "http://localhost:8000/api/customers/";
-  const SUPPLIERS_API = "http://localhost:8000/api/suppliers/";
+  const API_BASE = (window.VoyagerAPI && window.VoyagerAPI.API_BASE) || "/api";
+  const CUSTOMERS_API = `${API_BASE}/customers/`;
+  const SUPPLIERS_API = `${API_BASE}/suppliers/`;
 
   async function populateRefs(companyId) {
     const ref = window.VoyagerMock.getReferenceData(companyId);
@@ -454,7 +455,7 @@
     };
 
     try {
-      const res = await fetch("http://localhost:8000/api/tickets/create/", {
+      const res = await fetch(`${API_BASE}/tickets/create/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -463,7 +464,7 @@
       if (!res.ok) throw new Error(result.error || "Could not save this ticket.");
       window.VoyagerEntry.showToast(`${lines.length} ticket(s) saved to the database.`, returnTo);
     } catch (err) {
-      alert(err.message || "Could not save this ticket. Is the Django backend running on localhost:8000?");
+      alert(err.message || "Could not save this ticket. Is the backend running?");
     }
   });
 
@@ -480,7 +481,7 @@
     activeCompanyId = Number(active.id); activeCountry = active.country;
     await populateRefs(activeCompanyId);
     try {
-      const res = await fetch(`http://localhost:8000/api/tickets/?company_id=${activeCompanyId}`);
+      const res = await fetch(`${API_BASE}/tickets/?company_id=${activeCompanyId}`);
       existingTickets = res.ok ? await res.json() : [];
     } catch (_) { existingTickets = []; }
     if (!editId) addLine();

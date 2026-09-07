@@ -113,7 +113,7 @@
   // ============================================================
   // List load + row click
   // ============================================================
-  const TICKETS_API = "http://localhost:8000/api/tickets/";
+  const TICKETS_API = `${(window.VoyagerAPI && window.VoyagerAPI.API_BASE) || "/api"}/tickets/`;
 
   async function load(companyId, country) {
     activeCompanyId = companyId;

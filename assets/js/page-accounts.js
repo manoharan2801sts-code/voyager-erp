@@ -92,20 +92,21 @@
       btn.addEventListener("click", async () => {
         if (!confirm(`Delete ledger "${btn.dataset.name}"? This only works if no transactions exist for it.`)) return;
         try {
-          const res = await fetch(`http://localhost:8000/api/ledgers/${btn.dataset.id}/delete/?company_id=${currentCompanyId}`, {
+          const apiBase = (window.VoyagerAPI && window.VoyagerAPI.API_BASE) || "/api";
+          const res = await fetch(`${apiBase}/ledgers/${btn.dataset.id}/delete/?company_id=${currentCompanyId}`, {
             method: "DELETE",
           });
           const result = await res.json();
           if (!res.ok) throw new Error(result.error || "Could not delete this ledger.");
           load(currentCompanyId, currentCountryCode);
         } catch (err) {
-          alert(err.message || "Could not delete this ledger. Is the Django backend running?");
+          alert(err.message || "Could not delete this ledger. Is the backend running?");
         }
       });
     });
   }
 
-  const ACCOUNTS_API = "http://localhost:8000/api/accounts/";
+  const ACCOUNTS_API = `${(window.VoyagerAPI && window.VoyagerAPI.API_BASE) || "/api"}/accounts/`;
 
   async function load(companyId, country) {
     currentCompanyId = companyId; currentCountryCode = country;

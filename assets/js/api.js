@@ -4,9 +4,13 @@
  */
 (function (window) {
   const API_BASE =
-    window.location.protocol === "file:"
+    window.location.protocol === "file:" ||
+    (window.location.hostname === "localhost" && window.location.port !== "8000") ||
+    (window.location.hostname === "127.0.0.1" && window.location.port !== "8000")
       ? "http://localhost:8000/api"
-      : "/api";
+      : (window.location.hostname.endsWith(".github.io")
+          ? "https://voyager-erp.onrender.com/api"
+          : "/api");
 
   const TOKEN_KEY = "voyager_access_token";
   const REFRESH_KEY = "voyager_refresh_token";
@@ -129,6 +133,7 @@
   }
 
   window.VoyagerAPI = {
+    API_BASE,
     Store,
     apiCache,
     get: (path) => request(path),
