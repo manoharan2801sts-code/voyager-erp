@@ -30,7 +30,7 @@
   await loadStatesFromXml();
   document.getElementById("cancel-link").href = returnTo;
 
-  const API = (window.VoyagerAPI && window.VoyagerAPI.BASE_URL) || "/api";
+  const API = "http://localhost:8000/api";
 
   const SECTIONS = ["section-bank", "section-debtor-in", "section-debtor-ae", "section-creditor", "section-taxledger", "section-duties-taxes"];
   function hideAllSections() { SECTIONS.forEach((id) => (document.getElementById(id).style.display = "none")); }

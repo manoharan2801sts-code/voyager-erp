@@ -4,11 +4,9 @@
  */
 (function (window) {
   const API_BASE =
-    window.VOYAGER_API_BASE ||
-    ((window.location.protocol === "file:" ||
-     ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") && window.location.port !== "8000" && window.location.port !== "80"))
+    window.location.protocol === "file:"
       ? "http://localhost:8000/api"
-      : "/api");
+      : "/api";
 
   const TOKEN_KEY = "voyager_access_token";
   const REFRESH_KEY = "voyager_refresh_token";
@@ -131,7 +129,6 @@
   }
 
   window.VoyagerAPI = {
-    BASE_URL: API_BASE,
     Store,
     apiCache,
     get: (path) => request(path),

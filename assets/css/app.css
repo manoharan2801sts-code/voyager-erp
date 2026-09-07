@@ -183,11 +183,15 @@
   border-right: 1px solid #10263A !important;
   padding: 0.85rem 0.65rem;
   flex-shrink: 0; transition: width var(--t-med), background-color var(--t-med);
-  overflow-x: hidden; overflow-y: auto;
+  overflow-x: hidden; overflow-y: scroll;
   position: fixed; left: 0; top: var(--topnav-height);
   height: calc(100vh - var(--topnav-height));
   z-index: 90;
 }
+.app-sidebar::-webkit-scrollbar { width: 8px; }
+.app-sidebar::-webkit-scrollbar-track { background: #10263A; }
+.app-sidebar::-webkit-scrollbar-thumb { background: #2d5a80; border-radius: 4px; }
+.app-sidebar::-webkit-scrollbar-thumb:hover { background: #3a6f9a; }
 .app-sidebar.collapsed { width: var(--sidebar-width-collapsed); }
 
 .app-main {
@@ -436,13 +440,13 @@ table.dataTable tbody td {
 }
 
 /* Entry Forms -------------------------------------------------------------- */
-.entry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+.entry-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
 .entry-grid .span-2 { grid-column: span 2; }
 @media (max-width: 700px) { .entry-grid .span-2 { grid-column: span 1; } .entry-grid { grid-template-columns: 1fr; } }
 
 .entry-section-title {
-  font-size: 13.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
-  color: var(--color-text-muted); margin: 26px 0 14px; padding-top: 22px;
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--color-text-muted); margin: 16px 0 10px; padding-top: 14px;
   border-top: 1px solid var(--color-border);
 }
 .entry-section-title:first-child { margin-top: 0; padding-top: 0; border-top: none; }
@@ -471,7 +475,7 @@ table.dataTable tbody td {
 
 .date-group { display: flex; align-items: center; gap: 4px; }
 .date-group .dg-dd, .date-group .dg-mm, .date-group .dg-yyyy {
-  height: 40px; border: 1px solid #CBD5E1; border-radius: var(--radius-sm);
+  height: 40px; border: 1px solid #CBD5E1; border-radius: 0;
   font-family: var(--font-body); font-size: 14px; text-align: center;
   transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
@@ -482,6 +486,80 @@ table.dataTable tbody td {
   box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
 }
 .date-group .dg-sep { color: var(--color-text-faint); font-weight: 600; }
+
+/* Compact single-page ticket form ------------------------------------------- */
+.compact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px 14px; }
+.compact-grid .form-control-custom, .compact-grid .computed-field, .compact-grid select.form-control-custom { height: 34px; font-size: 13px; padding: 0.35rem 0.55rem; border-radius: 0; }
+.compact-grid .field-label { font-size: 12px; margin-bottom: 0.2rem; }
+.compact-grid .date-group .dg-dd, .compact-grid .date-group .dg-mm { width: 36px; height: 34px; font-size: 13px; border-radius: 0; }
+.compact-grid .date-group .dg-yyyy { width: 52px; height: 34px; font-size: 13px; border-radius: 0; }
+.req-star { color: var(--color-danger); margin-left: 2px; }
+
+.pax-table-wrap { overflow-x: auto; }
+.pax-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.pax-table thead th {
+  background: #F8FAFC; color: var(--color-text-muted); font-weight: 600; font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.02em; padding: 8px 8px; text-align: left;
+  border-bottom: 1px solid var(--color-border); white-space: nowrap; position: sticky; top: 0;
+}
+.pax-table tbody td { padding: 8px 8px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+.pax-table tbody tr:last-child td { border-bottom: none; }
+.pax-table input, .pax-table select {
+  width: 100%; min-width: 66px; height: 32px; padding: 0.3rem 0.45rem; font-size: 12.5px;
+  border: 1px solid #CBD5E1; border-radius: 0; font-family: var(--font-body); background: #fff;
+}
+.pax-table input:focus, .pax-table select:focus { outline: none; border-color: var(--color-teal); box-shadow: 0 0 0 2px rgba(15,118,110,0.15); }
+.pax-table .pax-num-col { width: 24px; text-align: center; color: var(--color-text-muted); font-weight: 600; font-size: 12.5px; }
+.pax-table .pax-total-cell { font-weight: 700; color: var(--color-teal); white-space: nowrap; font-size: 12.5px; }
+.pax-table .pax-expand-btn, .pax-table .pax-remove-btn {
+  height: 28px; padding: 0 10px; border-radius: 0; border: 1px solid var(--color-border); background: #fff;
+  color: var(--color-text-muted); cursor: pointer; font-size: 12px; line-height: 1; white-space: nowrap;
+}
+.pax-table .pax-expand-btn:hover { background: var(--color-bg-tint); color: var(--color-teal); }
+.pax-table .pax-remove-btn:hover { background: var(--color-danger-bg); color: var(--color-danger); border-color: var(--color-danger); }
+.pax-detail-row td { background: #FAFBFC; padding: 10px 12px; border-bottom: 1px solid var(--color-border); }
+.pax-detail-row.collapsed { display: none; }
+.pax-detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px 12px; }
+.pax-detail-grid label { display: block; font-size: 10.5px; color: var(--color-text-muted); margin-bottom: 2px; }
+.pax-detail-grid input, .pax-detail-grid select {
+  width: 100%; height: 30px; padding: 0.3rem 0.4rem; font-size: 12px; border: 1px solid #CBD5E1;
+  border-radius: 4px; font-family: var(--font-body);
+}
+
+/* Responsive — below ~900px there's no honest way to fit 16 table
+   columns side by side, so the table becomes a stack of cards instead
+   of forcing horizontal scroll. Each cell shows its column name via
+   the data-label attribute already present on every <td>. */
+@media (max-width: 900px) {
+  .compact-grid { grid-template-columns: repeat(2, 1fr); }
+  .pax-table-wrap { overflow-x: visible; }
+  .pax-table, .pax-table thead, .pax-table tbody, .pax-table th, .pax-table td, .pax-table tr { display: block; }
+  .pax-table { min-width: 0; width: 100%; }
+  .pax-table thead { display: none; }
+  .pax-table tbody tr.pax-row {
+    display: block; border: 1px solid var(--color-border); border-radius: var(--radius-md);
+    padding: 10px; margin-bottom: 10px; background: #fff;
+  }
+  .pax-table tbody tr.pax-row td {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 5px 2px; border-bottom: none;
+  }
+  .pax-table tbody tr.pax-row td[data-label]:not([data-label=""])::before {
+    content: attr(data-label); flex-shrink: 0; width: 100px;
+    font-size: 10.5px; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase;
+  }
+  .pax-table tbody tr.pax-row td input, .pax-table tbody tr.pax-row td select { width: auto; flex: 1; min-width: 0; }
+  .pax-table tbody tr.pax-row .pax-num-col { display: none; }
+  .pax-table tbody tr.pax-row td[data-label=""] { justify-content: flex-end; }
+  .pax-table tbody tr.pax-row td[data-label=""] button { width: auto; padding: 0 10px; }
+  .pax-detail-row.collapsed { display: none; }
+  .pax-detail-row td { display: block; padding: 8px 4px; }
+  .pax-detail-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .compact-grid { grid-template-columns: 1fr; }
+  .pax-detail-grid { grid-template-columns: 1fr; }
+}
 
 .entry-actions {
   display: flex; gap: 0.75rem; justify-content: flex-end;
@@ -571,4 +649,30 @@ table.dataTable tbody td {
 .dd-lines thead th { color: var(--color-text-muted); font-weight: 600; border-bottom: 1px solid var(--color-border); }
 
 .drillable { cursor: pointer; }
-.drillable:hover { background: var(--color-bg-tint) !important; }   
+.drillable:hover { background: var(--color-bg-tint) !important; }
+/* --------------------------------------------------------------------------
+   Rectangular form fields — every text box, dropdown, and date box across
+   every form (New Ledger, New Hotel, New Ticket, Vouchers, etc.) gets
+   square corners instead of rounded. Buttons, cards, and pills are
+   untouched — only asked for text boxes to change.
+   -------------------------------------------------------------------------- */
+.form-control-custom,
+input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="search"],
+select.form-control-custom,
+.date-group .dg-dd, .date-group .dg-mm, .date-group .dg-yyyy,
+.computed-field,
+.pax-table input, .pax-table select,
+.pax-detail-grid input, .pax-detail-grid select,
+.company-selector, .global-search input,
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+  border-radius: 0 !important;
+}
+
+/* Passenger table's own scrollbar, styled to match the app instead of
+   the plain gray browser default. */
+.pax-table-wrap::-webkit-scrollbar { height: 8px; width: 8px; }
+.pax-table-wrap::-webkit-scrollbar-track { background: var(--color-bg-canvas); }
+.pax-table-wrap::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+.pax-table-wrap::-webkit-scrollbar-thumb:hover { background: var(--color-teal); }
+.pax-table-wrap { scrollbar-width: thin; scrollbar-color: #CBD5E1 var(--color-bg-canvas); }

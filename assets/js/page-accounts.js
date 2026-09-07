@@ -92,8 +92,7 @@
       btn.addEventListener("click", async () => {
         if (!confirm(`Delete ledger "${btn.dataset.name}"? This only works if no transactions exist for it.`)) return;
         try {
-          const apiBase = (window.VoyagerAPI && window.VoyagerAPI.BASE_URL) || "/api";
-          const res = await fetch(`${apiBase}/ledgers/${btn.dataset.id}/delete/?company_id=${currentCompanyId}`, {
+          const res = await fetch(`http://localhost:8000/api/ledgers/${btn.dataset.id}/delete/?company_id=${currentCompanyId}`, {
             method: "DELETE",
           });
           const result = await res.json();
@@ -106,9 +105,7 @@
     });
   }
 
-  const ACCOUNTS_API = (window.VoyagerAPI && window.VoyagerAPI.BASE_URL)
-    ? `${window.VoyagerAPI.BASE_URL}/accounts/`
-    : "/api/accounts/";
+  const ACCOUNTS_API = "http://localhost:8000/api/accounts/";
 
   async function load(companyId, country) {
     currentCompanyId = companyId; currentCountryCode = country;
