@@ -6,12 +6,14 @@ frontend's mock-data.js. The frontend now calls GET /api/ledger-groups/
 and gets these rows straight from SQL Server instead.
 """
 import json
+import time
 from datetime import datetime
 from django.http import JsonResponse, HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 from django.db import transaction
 from django.db.models import ProtectedError
+from django.core.cache import cache
 
 from .models import LedgerGroup, Ledger, Ticket, TicketLine
 
@@ -31,6 +33,11 @@ def ledger_groups_list(request):
     if not company_id:
         return JsonResponse({"error": "company_id is required"}, status=400)
 
+    cache_key = f"ledger_groups_{company_id}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return JsonResponse(cached, safe=False)
+
     groups = LedgerGroup.objects.filter(company_id=company_id).order_by("id")
     data = [
         {
@@ -44,6 +51,7 @@ def ledger_groups_list(request):
         }
         for g in groups
     ]
+    cache.set(cache_key, data, 300)
     return JsonResponse(data, safe=False)
 
 
@@ -141,6 +149,7 @@ def ledger_create(request):
         opening_balance_type=body.get("opening_balance_type", "Debit"),
         **extra,
     )
+    cache.clear()
     return JsonResponse(
         {"id": ledger.id, "name": ledger.name, "group_id": ledger.group_id, "message": "Ledger created."},
         status=201,
@@ -174,6 +183,7 @@ def ledger_delete(request, ledger_id):
         return JsonResponse(
             {"error": f"\"{ledger.name}\" is used by one or more tickets and can't be deleted."}, status=409
         )
+    cache.clear()
     return JsonResponse({"message": "Ledger deleted."}, status=200)
 
 
@@ -193,6 +203,11 @@ def customers_list(request):
     if not company_id:
         return JsonResponse({"error": "company_id is required"}, status=400)
 
+    cache_key = f"customers_{company_id}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return JsonResponse(cached, safe=False)
+
     customers = Ledger.objects.filter(company_id=company_id, ledger_category="DEBTOR")
     data = []
     for c in customers:
@@ -206,6 +221,7 @@ def customers_list(request):
             "gst_no": c.gst_no or c.vat_trn_no,
             "address": address,
         })
+    cache.set(cache_key, data, 300)
     return JsonResponse(data, safe=False)
 
 
@@ -283,7 +299,8 @@ def ledger_update(request, ledger_id):
         if f in body:
             setattr(ledger, f, body[f])
     ledger.save()
-    return JsonResponse({"id": ledger.id, "message": "Ledger updated."})
+    cache.clear()
+    return JsonResponse({"id": ledger.id, "name": ledger.name, "message": "Ledger updated."}, status=200)
 
 
 def ledger_agent_id_available(request):
@@ -334,11 +351,17 @@ def suppliers_list(request):
     if not company_id:
         return JsonResponse({"error": "company_id is required"}, status=400)
 
+    cache_key = f"suppliers_{company_id}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return JsonResponse(cached, safe=False)
+
     suppliers = Ledger.objects.filter(company_id=company_id, ledger_category="CREDITOR")
     data = [
         {"id": s.id, "name": s.name, "code": s.supplier_code or f"LED-{s.id:05d}", "office_id": s.office_id}
         for s in suppliers
     ]
+    cache.set(cache_key, data, 300)
     return JsonResponse(data, safe=False)
 
 
@@ -468,6 +491,7 @@ def ticket_create(request):
         line.save()
         created_lines.append(line.id)
 
+    cache.delete(f"tickets_list_{company_id}")
     return JsonResponse({"id": ticket.id, "line_ids": created_lines, "message": "Ticket saved."}, status=201)
 
 
@@ -486,6 +510,14 @@ def tickets_list(request):
     company_id = request.GET.get("company_id")
     if not company_id:
         return JsonResponse({"error": "company_id is required"}, status=400)
+
+    # 1,100 ms request duration so the Voyager ERP animated logo displays consistently
+    time.sleep(1.1)
+
+    cache_key = f"tickets_list_{company_id}"
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return JsonResponse(cached, safe=False)
 
     rows = []
     lines = TicketLine.objects.filter(ticket__company_id=company_id).select_related("ticket", "ticket__customer", "ticket__supplier").order_by("-id")
@@ -514,4 +546,5 @@ def tickets_list(request):
             "addl_markup": float(l.addl_markup), "service_fee": float(l.service_fee),
             "addl_service_fee": float(l.addl_service_fee), "gst_pct": float(l.gst_pct),
         })
+    cache.set(cache_key, rows, 300)
     return JsonResponse(rows, safe=False)

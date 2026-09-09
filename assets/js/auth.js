@@ -27,10 +27,13 @@
   }
 
   function completeSession(data) {
+    if (data.access_token === "demo-token" || (data.access_token && data.access_token.startsWith("mock-"))) {
+      Store.setMockMode(true);
+    }
     Store.setToken(data.access_token);
     Store.setRefresh(data.refresh_token);
-    Store.setUser(data.user);
-    window.location.href = "dashboard.html";
+    Store.setUser(data.user || (window.VoyagerMock ? window.VoyagerMock.USER : { full_name: "Ananya Krishnan" }));
+    window.location.replace("dashboard.html");
   }
 
   loginForm.addEventListener("submit", async (e) => {
@@ -85,8 +88,8 @@
     Store.setMockMode(true);
     Store.setToken("demo-token");
     Store.setRefresh("demo-refresh");
-    Store.setUser(window.VoyagerMock.USER);
-    window.location.href = "dashboard.html";
+    Store.setUser(window.VoyagerMock ? window.VoyagerMock.USER : { full_name: "Ananya Krishnan" });
+    window.location.replace("dashboard.html");
   });
 
   document.getElementById("forgot-link").addEventListener("click", async (e) => {

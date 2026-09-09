@@ -54,11 +54,10 @@
 .login-card-body { padding: 1.5rem; }
 
 .login-form-mark {
-  display: flex; align-items: center; gap: 0.6rem;
-  font-family: var(--font-display); font-weight: 700; font-size: 17px;
-  color: var(--color-text-dark); margin-bottom: 1.75rem;
+  display: flex; align-items: center; gap: 0.65rem;
+  font-family: var(--font-display); font-weight: 700; font-size: 18px;
+  color: var(--color-text-dark); margin-bottom: 1.5rem;
 }
-@media (min-width: 992px) { .login-form-mark { display: none; } }
 
 .login-title { font-size: 24px; font-weight: 700; margin-bottom: 0.35rem; color: var(--color-text-dark); letter-spacing: -0.02em; }
 
@@ -676,3 +675,810 @@ select.form-control-custom,
 .pax-table-wrap::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
 .pax-table-wrap::-webkit-scrollbar-thumb:hover { background: var(--color-teal); }
 .pax-table-wrap { scrollbar-width: thin; scrollbar-color: #CBD5E1 var(--color-bg-canvas); }
+
+/* ==========================================================================
+   Desktop ERP Ticket Sales Design (Applied Strictly to Our Project's Data)
+   ========================================================================== */
+.dom-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ECEFF3;
+  border: 1px solid #7E8C9E;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1E293B;
+}
+[data-theme="dark"] .dom-window {
+  background: #151D2A;
+  border-color: #2E3E52;
+  color: #E2E8F0;
+}
+
+/* 1. Title Bar */
+.dom-titlebar {
+  height: 26px;
+  background: #0F766E;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px 0 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  flex-shrink: 0;
+  user-select: none;
+}
+.dom-titlebar-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dom-titlebar-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.dom-titlebar-btn {
+  width: 22px;
+  height: 19px;
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: 2px;
+  line-height: 1;
+}
+.dom-titlebar-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+.dom-titlebar-btn.btn-close:hover {
+  background: #E81123;
+}
+
+/* 2. Tabs Strip */
+.dom-tabs {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 6px 14px 4px;
+  background: #ECEFF3;
+  border-bottom: 1px solid #D2D8E2;
+  font-size: 12px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .dom-tabs {
+  background: #151D2A;
+  border-color: #243042;
+}
+.dom-tab {
+  color: #4B5563;
+  cursor: pointer;
+  padding-bottom: 3px;
+  text-decoration: none;
+}
+[data-theme="dark"] .dom-tab {
+  color: #94A3B8;
+}
+.dom-tab.active {
+  color: #0F766E;
+  font-weight: 700;
+  border-bottom: 2.5px solid #0F766E;
+  margin-bottom: -4px;
+}
+[data-theme="dark"] .dom-tab.active {
+  color: #38BDF8;
+  border-color: #38BDF8;
+}
+
+/* 3. Main Form Scrollable Content */
+.dom-main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+/* 4. Horizontal Inline Form Grid */
+.dom-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px 16px;
+  background: #ECEFF3;
+  padding: 4px 2px 6px;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .dom-form-grid {
+  background: #151D2A;
+}
+.dom-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+}
+.dom-label {
+  min-width: 110px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #1E293B;
+  text-align: right;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .dom-label {
+  color: #CBD5E1;
+}
+.dom-req {
+  color: #EF4444;
+  font-weight: 700;
+  margin-left: 2px;
+}
+.dom-input, .dom-select {
+  height: 24px;
+  font-size: 11.5px;
+  padding: 1px 6px;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #0F172A;
+  border-radius: 0 !important;
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+}
+[data-theme="dark"] .dom-input, [data-theme="dark"] .dom-select {
+  background: #0F172A;
+  border-color: #334155;
+  color: #F8FAFC;
+}
+.dom-input:focus, .dom-select:focus {
+  outline: none;
+  border-color: #0F766E;
+}
+.dom-input-readonly {
+  height: 24px;
+  font-size: 11.5px;
+  padding: 2px 6px;
+  border: 1px solid #CBD5E1;
+  background: #F1F5F9;
+  color: #475569;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  flex: 1;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+[data-theme="dark"] .dom-input-readonly {
+  background: #1E293B;
+  color: #94A3B8;
+  border-color: #334155;
+}
+
+/* Customer Address multi-line box: neatly and properly fits address inside box borders without spilling */
+.dom-field.field-address {
+  align-items: flex-start;
+}
+.dom-field.field-address .dom-label {
+  padding-top: 3px;
+}
+.dom-input-readonly.readonly-address {
+  height: auto;
+  min-height: 40px;
+  max-height: 52px;
+  line-height: 1.24;
+  padding: 3px 5px;
+  display: block;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  word-break: break-word;
+  white-space: normal;
+  font-size: 10.5px;
+}
+
+/* 5. Passenger Register Data Grid */
+.dom-grid-container {
+  border: 1px solid #94A3B8;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .dom-grid-container {
+  background: #111827;
+  border-color: #334155;
+}
+.dom-grid-scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 200px;
+}
+.dom-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.dom-grid-table thead th {
+  background: #6D7F93 !important;
+  color: #FFFFFF !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  padding: 4px 6px;
+  border-right: 1px solid #8293A6;
+  border-bottom: 1px solid #5A6B7C;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  text-align: left;
+}
+.dom-grid-table thead th:last-child {
+  border-right: none;
+}
+.dom-grid-table tbody tr {
+  border-bottom: 1px solid #E2E8F0;
+  cursor: pointer;
+  background: #FFFFFF;
+}
+[data-theme="dark"] .dom-grid-table tbody tr {
+  background: #162032;
+  border-color: #243046;
+}
+.dom-grid-table tbody tr:hover {
+  background: #F1F5F9;
+}
+[data-theme="dark"] .dom-grid-table tbody tr:hover {
+  background: #1E2D44;
+}
+
+/* Selected row in Voyager ERP Brand Teal */
+.dom-grid-table tbody tr.active-row {
+  background: #0F766E !important;
+  color: #FFFFFF !important;
+}
+.dom-grid-table tbody tr.active-row td {
+  color: #FFFFFF !important;
+}
+.dom-grid-table tbody tr td {
+  padding: 3px 6px;
+  vertical-align: middle;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.dom-grid-table tbody tr td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.dom-grid-table input, .dom-grid-table select {
+  height: 22px;
+  font-size: 11px;
+  padding: 1px 4px;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #0F172A;
+  border-radius: 0 !important;
+  width: 100%;
+}
+.dom-grid-table tbody tr.active-row input,
+.dom-grid-table tbody tr.active-row select {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+  border-color: #FFFFFF !important;
+}
+
+/* 6. Under-Grid Bar */
+.dom-grid-statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: #ECEFF3;
+  border-top: 1px solid #CBD5E1;
+  font-size: 11.5px;
+  color: #334155;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .dom-grid-statusbar {
+  background: #151D2A;
+  border-color: #243042;
+  color: #94A3B8;
+}
+.dom-mini-btn-group {
+  display: flex;
+  gap: 4px;
+}
+.dom-bevel-btn {
+  height: 22px;
+  padding: 0 8px;
+  background: #FFFFFF;
+  border: 1px solid #B0BAC8;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+  border-radius: 2px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.dom-bevel-btn:hover {
+  background: #F1F5F9;
+  border-color: #64748B;
+}
+
+/* 7. Summary / Financial Breakdown */
+.dom-summary-strip {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.dom-bal-card {
+  width: 150px;
+  background: #0F766E;
+  color: #FFFFFF;
+  padding: 8px 10px;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.dom-bal-card .bal-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.dom-bal-pill {
+  background: #FFFFFF;
+  color: #0F172A;
+  border-radius: 12px;
+  padding: 3px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  font-family: var(--font-mono);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+.dom-dtls-table {
+  flex: 1;
+  border-collapse: collapse;
+  font-size: 11px;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+}
+[data-theme="dark"] .dom-dtls-table {
+  background: #111827;
+  border-color: #334155;
+}
+.dom-dtls-table th {
+  background: #6D7F93;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border: 1px solid #5A6B7C;
+  text-align: right;
+  white-space: nowrap;
+}
+.dom-dtls-table th:first-child {
+  text-align: left;
+}
+.dom-dtls-table td {
+  padding: 4px 8px;
+  border: 1px solid #E2E8F0;
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #0F172A;
+}
+[data-theme="dark"] .dom-dtls-table td {
+  border-color: #243046;
+  color: #E2E8F0;
+}
+.dom-dtls-table td:first-child {
+  text-align: left;
+  font-weight: 700;
+  color: #334155;
+}
+[data-theme="dark"] .dom-dtls-table td:first-child {
+  color: #94A3B8;
+}
+
+/* 8. Bottom Action Toolbar */
+.dom-bottom-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #ECEFF3;
+  border-top: 1px solid #D2D8E2;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .dom-bottom-toolbar {
+  background: #151D2A;
+  border-color: #243042;
+}
+.dom-nav-btn {
+  height: 26px;
+  padding: 0 12px;
+  background: #FFFFFF;
+  border: 1px solid #B0BAC8;
+  border-radius: 2px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #334155;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+[data-theme="dark"] .dom-nav-btn {
+  background: #1E293B;
+  border-color: #334155;
+  color: #CBD5E1;
+}
+.dom-nav-btn:hover {
+  background: #F1F5F9;
+  border-color: #64748B;
+}
+.dom-nav-btn.btn-primary {
+  background: #0F766E;
+  color: #FFFFFF;
+  border-color: #0B5F59;
+}
+.dom-nav-btn.btn-primary:hover {
+  background: #0B5F59;
+}
+.dom-nav-btn.btn-danger {
+  color: #DC2626;
+  border-color: #FCA5A5;
+}
+.dom-nav-btn.btn-danger:hover {
+  background: #FEE2E2;
+}
+
+/* Proceed Button below ROE */
+.dom-proceed-btn {
+  height: 24px;
+  padding: 0 16px;
+  background: #0F766E;
+  color: #FFFFFF;
+  border: 1px solid #0B5F59;
+  border-radius: 2px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.dom-proceed-btn:hover {
+  background: #0B5F59;
+  transform: translateY(-1px);
+}
+.dom-proceed-btn:active {
+  transform: translateY(0);
+}
+
+/* 9. Passenger Fare & Accounting Breakdown Modal */
+.dom-modal-backdrop {
+  position: fixed;
+  top: var(--topnav-height, 52px);
+  left: var(--sidebar-width, 240px);
+  width: calc(100vw - var(--sidebar-width, 240px));
+  height: calc(100vh - var(--topnav-height, 52px));
+  background: rgba(15, 23, 42, 0.40);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+body:has(#shell-sidebar.collapsed) .dom-modal-backdrop,
+body:has(.app-sidebar.collapsed) .dom-modal-backdrop {
+  left: var(--sidebar-width-collapsed, 68px);
+  width: calc(100vw - var(--sidebar-width-collapsed, 68px));
+}
+@media (max-width: 900px) {
+  .dom-modal-backdrop {
+    left: 0;
+    width: 100vw;
+  }
+}
+.dom-modal-backdrop.open {
+  display: flex;
+}
+.dom-modal-window {
+  width: 1080px;
+  max-width: 96%;
+  background: #ECEFF3;
+  border: 2px solid #0F766E;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--font-sans);
+}
+[data-theme="dark"] .dom-modal-window {
+  background: #151D2A;
+  border-color: #0F766E;
+}
+.dom-modal-titlebar {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0F766E;
+  color: #FFFFFF;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.dom-modal-body {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+  flex: 1;
+}
+.dom-modal-col-left {
+  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #FFFFFF;
+  padding: 6px 8px;
+  border: 1px solid #CBD5E1;
+  border-radius: 3px;
+}
+[data-theme="dark"] .dom-modal-col-left {
+  background: #1E293B;
+  border-color: #334155;
+}
+.dom-modal-col-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.dom-modal-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #0F766E;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #CBD5E1;
+  margin-bottom: 2px;
+}
+[data-theme="dark"] .dom-modal-section-title {
+  color: #14B8A6;
+  border-color: #334155;
+}
+.dom-modal-form-grid {
+  display: grid;
+  grid-template-columns: 82px 1fr;
+  gap: 3px 6px;
+  align-items: center;
+  font-size: 11px;
+}
+.dom-modal-form-grid label {
+  text-align: right;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+  font-size: 11px;
+}
+[data-theme="dark"] .dom-modal-form-grid label {
+  color: #94A3B8;
+}
+.dom-modal-fares-card {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  padding: 5px 8px;
+  border-radius: 3px;
+}
+[data-theme="dark"] .dom-modal-fares-card {
+  background: #1E293B;
+  border-color: #334155;
+}
+.dom-modal-fares-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3.5px 8px;
+}
+.dom-modal-fares-grid .fare-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+.dom-modal-fares-grid .fare-item label {
+  min-width: 68px;
+  text-align: right;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+  font-size: 11px;
+}
+[data-theme="dark"] .dom-modal-fares-grid .fare-item label {
+  color: #94A3B8;
+}
+.dom-modal-accounting-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.dom-acct-box {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+[data-theme="dark"] .dom-acct-box {
+  background: #1E293B;
+  border-color: #334155;
+}
+.dom-acct-header {
+  padding: 3px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.dom-acct-header.teal {
+  background: #0F766E;
+}
+.dom-acct-header.navy {
+  background: #17324D;
+}
+.dom-acct-body {
+  padding: 4px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.dom-acct-field {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+.dom-acct-field label {
+  flex: 0 0 94px;
+  text-align: right;
+  font-weight: 600;
+  color: #334155;
+  font-size: 10.5px;
+  white-space: nowrap;
+}
+[data-theme="dark"] .dom-acct-field label {
+  color: #94A3B8;
+}
+.dom-modal-footer {
+  height: 36px;
+  padding: 0 12px;
+  background: #ECEFF3;
+  border-top: 1px solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+[data-theme="dark"] .dom-modal-footer {
+  background: #151D2A;
+  border-color: #243042;
+}
+.dom-modal-total-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0F766E;
+}
+[data-theme="dark"] .dom-modal-total-bar {
+  color: #14B8A6;
+}
+
+/* Modal Input overrides — comfortable ERP presentation */
+.dom-modal-window input,
+.dom-modal-window select,
+.dom-modal-window .dom-input-readonly {
+  height: 22px !important;
+  font-size: 11px !important;
+  padding: 2px 6px !important;
+  border-radius: 2px !important;
+  box-sizing: border-box;
+}
+.dom-modal-window .date-group input {
+  height: 22px !important;
+  font-size: 11px !important;
+  padding: 1px 3px !important;
+}
+
+/* Table Action Buttons (Edit / Delete) */
+.dom-action-btn-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.dom-action-btn {
+  height: 20px;
+  padding: 0 8px;
+  border-radius: 2px;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #334155;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  line-height: 1;
+}
+.dom-action-btn.btn-edit {
+  color: #0F766E;
+  border-color: #0F766E;
+}
+.dom-action-btn.btn-edit:hover {
+  background: #F0FDFA;
+}
+.dom-action-btn.btn-delete {
+  color: #DC2626;
+  border-color: #FCA5A5;
+}
+.dom-action-btn.btn-delete:hover {
+  background: #FEF2F2;
+}
+.dom-grid-table tbody tr.active-row .dom-action-btn.btn-edit {
+  background: #FFFFFF;
+  color: #0F766E;
+  border-color: #FFFFFF;
+}
+.dom-grid-table tbody tr.active-row .dom-action-btn.btn-delete {
+  background: #FFFFFF;
+  color: #DC2626;
+  border-color: #FFFFFF;
+}

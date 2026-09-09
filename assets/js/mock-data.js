@@ -663,7 +663,7 @@
     const cid = Number(qp(path, "company_id")) || 1;
 
     if (path.startsWith("/dashboard")) return DASHBOARD[cid] || DASHBOARD[1];
-    const singleMatch = path.match(/^\/travel\/(tickets|hotels|visa|insurance|tours)\/(\d+)/);
+    const singleMatch = path.match(/^\/(?:travel\/)?(tickets|hotels|visa|insurance|tours)\/(\d+)/);
     if (singleMatch) {
       const [, kind, recId] = singleMatch;
       const getters = { tickets: getTicket, hotels: getHotel, visa: getVisaRecord, insurance: getInsuranceRecord, tours: getTour };
@@ -677,13 +677,13 @@
         return result.error ? Promise.reject(new Error(result.error)) : result.record;
       }
     }
-    if (path.startsWith("/travel/tickets")) return TICKETS[cid] || [];
-    if (path.startsWith("/travel/hotels")) return HOTELS[cid] || [];
-    if (path.startsWith("/travel/visa")) return VISA[cid] || [];
-    if (path.startsWith("/travel/insurance")) return INSURANCE[cid] || [];
-    if (path.startsWith("/travel/tours")) return TOURS[cid] || [];
-    if (path.startsWith("/accounting/ledgers/")) {
-      const idMatch = path.match(/\/accounting\/ledgers\/(\d+)/);
+    if (path.startsWith("/tickets") || path.startsWith("/travel/tickets")) return TICKETS[cid] || [];
+    if (path.startsWith("/hotels") || path.startsWith("/travel/hotels")) return HOTELS[cid] || [];
+    if (path.startsWith("/visa") || path.startsWith("/travel/visa")) return VISA[cid] || [];
+    if (path.startsWith("/insurance") || path.startsWith("/travel/insurance")) return INSURANCE[cid] || [];
+    if (path.startsWith("/tours") || path.startsWith("/travel/tours")) return TOURS[cid] || [];
+    if (path.startsWith("/ledgers/") || path.startsWith("/accounting/ledgers/")) {
+      const idMatch = path.match(/\/(?:accounting\/)?ledgers\/(\d+)/);
       if (method === "GET" && idMatch) {
         const account = (ACCOUNTS[cid] || []).find((a) => a.id === Number(idMatch[1]) && !a.is_group);
         return account ? account : Promise.reject(new Error("Ledger not found"));
@@ -697,8 +697,8 @@
         return result.error ? Promise.reject(new Error(result.error)) : result;
       }
     }
-    if (path.startsWith("/accounting/accounts/groups")) {
-      const idMatch = path.match(/\/accounting\/accounts\/groups\/(\d+)/);
+    if (path.startsWith("/ledger-groups") || path.startsWith("/accounting/accounts/groups")) {
+      const idMatch = path.match(/\/(?:accounting\/accounts\/groups|ledger-groups)\/(\d+)/);
       if (method === "POST") {
         const result = addGroup(cid, body);
         return result.error ? Promise.reject(new Error(result.error)) : result.group;
@@ -713,8 +713,8 @@
       }
       return getAccountGroups(cid);
     }
-    if (path.startsWith("/accounting/accounts")) return ACCOUNTS[cid] || [];
-    const voucherMatch = path.match(/^\/accounting\/vouchers\/(\d+)/);
+    if (path.startsWith("/accounts") || path.startsWith("/accounting/accounts")) return ACCOUNTS[cid] || [];
+    const voucherMatch = path.match(/^\/(?:accounting\/)?vouchers\/(\d+)/);
     if (voucherMatch) {
       const vId = Number(voucherMatch[1]);
       if (method === "GET") {
@@ -726,12 +726,12 @@
         return result.error ? Promise.reject(new Error(result.error)) : result.record;
       }
     }
-    if (path.startsWith("/accounting/vouchers")) return VOUCHERS[cid] || [];
-    if (path.startsWith("/parties/customers")) return CUSTOMERS[cid] || [];
-    if (path.startsWith("/parties/suppliers")) return SUPPLIERS[cid] || [];
+    if (path.startsWith("/vouchers") || path.startsWith("/accounting/vouchers")) return VOUCHERS[cid] || [];
+    if (path.startsWith("/customers") || path.startsWith("/parties/customers")) return CUSTOMERS[cid] || [];
+    if (path.startsWith("/suppliers") || path.startsWith("/parties/suppliers")) return SUPPLIERS[cid] || [];
     if (path.startsWith("/reports/trial-balance")) return trialBalanceFrom(ACCOUNTS[cid] || []);
-    if (path.startsWith("/reports/gst-summary")) return cid === 1 ? GST_SUMMARY : [];
-    if (path.startsWith("/reports/vat-summary")) return cid === 2 ? VAT_SUMMARY : [];
+    if (path.startsWith("/reports/gst-summary") || path.startsWith("/tax/gst")) return cid === 1 ? GST_SUMMARY : [];
+    if (path.startsWith("/reports/vat-summary") || path.startsWith("/tax/vat")) return cid === 2 ? VAT_SUMMARY : [];
 
     console.warn("[VoyagerMock] no mock handler for", path);
     return [];

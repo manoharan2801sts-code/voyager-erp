@@ -8,7 +8,9 @@
     (window.location.hostname === "localhost" && window.location.port !== "8000") ||
     (window.location.hostname === "127.0.0.1" && window.location.port !== "8000")
       ? "http://localhost:8000/api"
-      : "/api";
+      : ((window.location.hostname.endsWith(".github.io") || (window.location.hostname.includes("onrender.com") && window.location.hostname !== "voyager-erp.onrender.com"))
+          ? "https://voyager-erp.onrender.com/api"
+          : "/api");
 
   const TOKEN_KEY = "voyager_access_token";
   const REFRESH_KEY = "voyager_refresh_token";
@@ -25,7 +27,15 @@
     setUser: (u) => localStorage.setItem(USER_KEY, JSON.stringify(u)),
     getCompanyId: () => localStorage.getItem(COMPANY_KEY),
     setCompanyId: (id) => localStorage.setItem(COMPANY_KEY, id),
-    isMockMode: () => localStorage.getItem(MOCK_KEY) === "1" || localStorage.getItem(TOKEN_KEY) === "demo-token" || !localStorage.getItem(TOKEN_KEY),
+    isMockMode: () => {
+      const token = localStorage.getItem(TOKEN_KEY);
+      return (
+        localStorage.getItem(MOCK_KEY) === "1" ||
+        token === "demo-token" ||
+        (token && token.startsWith("mock-")) ||
+        !token
+      );
+    },
     setMockMode: (on) => (on ? localStorage.setItem(MOCK_KEY, "1") : localStorage.removeItem(MOCK_KEY)),
     clear: () => {
       [TOKEN_KEY, REFRESH_KEY, USER_KEY, MOCK_KEY].forEach((k) => localStorage.removeItem(k));
@@ -36,16 +46,31 @@
   // Ultra-fast in-memory cache for instant GET requests
   const apiCache = new Map();
 
+  // Known Django endpoints implemented in backend
+  const DJANGO_PREFIXES = [
+    "/ledger-groups",
+    "/ledgers",
+    "/customers",
+    "/suppliers",
+    "/accounts",
+    "/tickets"
+  ];
+
+  function isDjangoEndpoint(path) {
+    const p = path.split("?")[0].replace(/^\/api/, "");
+    return DJANGO_PREFIXES.some((prefix) => p === prefix || p.startsWith(prefix + "/"));
+  }
+
   async function request(path, { method = "GET", body, auth = true, retry = true } = {}) {
     const cacheKey = `${method}:${path}:${body ? JSON.stringify(body) : ""}`;
 
-    // Return instant cached data for GET requests
+    // Return instant cached data for GET requests (0ms)
     if (method === "GET" && apiCache.has(cacheKey)) {
       return apiCache.get(cacheKey);
     }
 
-    // In mock/demo mode or standalone frontend
-    if (Store.isMockMode() || (window.VoyagerMock && Store.getToken() === "demo-token")) {
+    // Instantly route non-Django paths (like /companies, /dashboard, etc.) with 0ms delay
+    if (!isDjangoEndpoint(path) && window.VoyagerMock) {
       const result = window.VoyagerMock.handle(path, { method, body });
       if (method === "GET") apiCache.set(cacheKey, result);
       else apiCache.clear();
@@ -59,9 +84,9 @@
     }
 
     try {
-      // Abort controller with fast 2.5s timeout to prevent hanging on unreachable backends
+      // 1500ms timeout allows Django server to query database without hanging
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2500);
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
 
       const res = await fetch(`${API_BASE}${path}`, {
         method,

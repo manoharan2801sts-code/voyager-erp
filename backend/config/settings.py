@@ -76,6 +76,8 @@ DATABASES = {
         "PASSWORD": config("DB_PASSWORD", default="Mano@2005"),
         "HOST": config("DB_HOST", default="127.0.0.1"),
         "PORT": config("DB_PORT", default="3306"),
+        "CONN_MAX_AGE": config("DB_CONN_MAX_AGE", default=600, cast=int),
+        "CONN_HEALTH_CHECKS": True,
         "OPTIONS": db_options,
     }
 }

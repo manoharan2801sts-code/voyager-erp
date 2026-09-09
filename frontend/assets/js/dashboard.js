@@ -3,7 +3,7 @@
 
   // --- Auth guard ---
   if (!Store.getToken()) {
-    window.location.href = "index.html";
+    window.location.replace("index.html");
     return;
   }
 
@@ -22,6 +22,7 @@
   }
 
   function initials(name) {
+    if (!name || typeof name !== "string") return "AD";
     return name.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]).join("").toUpperCase();
   }
 
@@ -29,7 +30,9 @@
   if (user) {
     const hour = new Date().getHours();
     const greetWord = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-    document.getElementById("greeting").textContent = `${greetWord}, ${user.full_name.split(" ")[0]}`;
+    const firstName = (user.full_name && typeof user.full_name === "string") ? user.full_name.split(" ")[0] : "Admin";
+    const el = document.getElementById("greeting");
+    if (el) el.textContent = `${greetWord}, ${firstName}`;
   }
 
   // --- Company selector + dashboard load ---

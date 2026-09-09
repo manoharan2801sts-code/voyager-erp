@@ -57,160 +57,13 @@
     });
   }
 
-  async function navigateTo(url, push = true) {
-    if (!url || url === "#" || url.startsWith("javascript:") || isNavigating) return;
-    if (url === "index.html" || url.endsWith("/index.html")) {
-      window.location.href = "index.html";
-      return;
-    }
-
-    isNavigating = true;
-    try {
-      const res = await fetch(url);
-      if (!res.ok) {
-        window.location.href = url;
-        return;
-      }
-      const html = await res.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, "text/html");
-
-      // 1. Update Document Title
-      if (doc.title) {
-        document.title = doc.title;
-      }
-
-      // 2. Swap Main View
-      const newMain = doc.querySelector(".app-main");
-      const currentMain = document.querySelector(".app-main");
-      if (newMain && currentMain) {
-        currentMain.innerHTML = newMain.innerHTML;
-        if (newMain.getAttribute("style")) {
-          currentMain.setAttribute("style", newMain.getAttribute("style"));
-        } else {
-          currentMain.removeAttribute("style");
-        }
-        currentMain.classList.remove("spa-fade-in");
-        void currentMain.offsetWidth; // trigger reflow for animation
-        currentMain.classList.add("spa-fade-in");
-      }
-
-      // 3. Update Page Styles
-      const existingPageStyles = document.querySelectorAll("style[data-page-style]");
-      existingPageStyles.forEach((s) => s.remove());
-      const newPageStyles = doc.querySelectorAll("head style");
-      newPageStyles.forEach((s) => {
-        const cloned = document.createElement("style");
-        cloned.setAttribute("data-page-style", "1");
-        cloned.textContent = s.textContent;
-        document.head.appendChild(cloned);
-      });
-
-      // 4. Update Sidebar Active State
-      updateActiveNav(null, url);
-
-      // 5. Update Browser History
-      if (push) {
-        window.history.pushState({ url }, "", url);
-      }
-
-      window.scrollTo({ top: 0, behavior: "instant" });
-
-      // 6. Execute scripts from the new page in order
-      const scripts = Array.from(doc.querySelectorAll("script"));
-      for (const s of scripts) {
-        const src = s.getAttribute("src");
-        if (src) {
-          // Skip shared base libraries that are already loaded in memory
-          if (
-            src.includes("hardcode.js") ||
-            src.includes("mock-data.js") ||
-            src.includes("api.js") ||
-            src.includes("util.js") ||
-            src.includes("entry-common.js") ||
-            src.includes("drilldown.js") ||
-            src.includes("shell.js") ||
-            src.includes("auth.js")
-          ) {
-            continue;
-          }
-
-          // Check if external CDN library is already loaded
-          if (src.includes("chart.umd") && window.Chart) continue;
-          if (src.includes("jquery") && window.jQuery) continue;
-          if (src.includes("dataTables") && window.jQuery && window.jQuery.fn && window.jQuery.fn.DataTable) continue;
-
-          // Dynamically load page-specific script
-          await new Promise((resolve) => {
-            const scriptEl = document.createElement("script");
-            scriptEl.src = src.split("?")[0] + "?t=" + Date.now();
-            scriptEl.onload = resolve;
-            scriptEl.onerror = resolve;
-            document.body.appendChild(scriptEl);
-          });
-        } else if (s.textContent.trim()) {
-          try {
-            const inlineScript = document.createElement("script");
-            inlineScript.textContent = s.textContent;
-            document.body.appendChild(inlineScript);
-            inlineScript.remove();
-          } catch (e) {
-            console.error("Inline script execution error:", e);
-          }
-        }
-      }
-    } catch (err) {
-      console.error("SPA routing error:", err);
+  function navigateTo(url) {
+    if (url && url !== "#") {
       window.location.href = url;
-    } finally {
-      isNavigating = false;
     }
   }
 
-  // Intercept all clicks globally for instant SPA navigation without full page reload
-  document.addEventListener("click", (e) => {
-    const link = e.target.closest("a");
-    if (!link) return;
-
-    const href = link.getAttribute("href");
-    if (
-      !href ||
-      href === "#" ||
-      href.startsWith("javascript:") ||
-      href.startsWith("mailto:") ||
-      href.startsWith("tel:") ||
-      link.hasAttribute("data-phase2") ||
-      link.id === "logout-link"
-    ) {
-      return;
-    }
-
-    // Allow opening in new tab / window with Ctrl/Cmd/Shift
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-
-    // Check if link is internal
-    if (link.hostname && link.hostname !== window.location.hostname) return;
-
-    // Only route to html pages
-    const isHtmlTarget = href.includes(".html") || !href.includes(".");
-    if (!isHtmlTarget) return;
-
-    e.preventDefault();
-    navigateTo(href, true);
-  });
-
-  // Handle Browser Back and Forward buttons seamlessly
-  window.addEventListener("popstate", (e) => {
-    if (e.state && e.state.url) {
-      navigateTo(e.state.url, false);
-    } else {
-      navigateTo(window.location.pathname + window.location.search, false);
-    }
-  });
-
-  async function init({ activeKey, onCompanyChange }) {
-    currentOnCompanyChange = onCompanyChange;
-
+  function renderShellImmediate(activeKey) {
     if (!Store.getToken()) {
       Store.setToken("demo-token");
       Store.setRefresh("demo-refresh");
@@ -218,19 +71,20 @@
       Store.setMockMode(true);
     }
     const user = Store.getUser() || { full_name: "Ananya Krishnan" };
+    const userName = (user && user.full_name && typeof user.full_name === "string") ? user.full_name : "Ananya Krishnan";
     const currentTheme = document.documentElement.getAttribute("data-theme") || "light";
 
-    // Build Topnav & Sidebar only once if not already rendered
+    // 1. Build Topnav Immediately
     const topnav = document.getElementById("shell-topnav");
-    if (topnav && (!isShellInitialized || !topnav.innerHTML.trim())) {
+    if (topnav && !topnav.innerHTML.trim()) {
       topnav.innerHTML = `
         <button class="sidebar-toggle-btn" id="sidebar-toggle" aria-label="Toggle sidebar">
           ${icon("M3 6h18M3 12h18M3 18h18")}
         </button>
-        <div class="app-logo">
+        <a class="app-logo" href="dashboard.html" title="Voyager ERP Home">
           <span class="mark">${icon("M2 16l20-8-8 20-2-8-8-2z").replace("currentColor", "#fff")}</span>
           Voyager <span style="font-weight:500; color:var(--color-text-muted);">ERP</span>
-        </div>
+        </a>
         <select class="form-control-custom company-selector" id="company-selector"></select>
         <div class="global-search">
           <span class="icon">${icon("M11 11m-7 0a7 7 0 1014 0 7 7 0 10-14 0")}</span>
@@ -238,9 +92,9 @@
         </div>
         <div class="topnav-actions">
           <!-- 1. Profile Pill First -->
-          <div class="user-chip" id="user-profile-chip" title="Logged in as ${user ? user.full_name : ''}">
-            <span class="user-avatar">${user ? initials(user.full_name) : "--"}</span>
-            <span style="font-size:0.85rem; font-weight:600;">${user ? user.full_name.split(" (")[0] : "…"}</span>
+          <div class="user-chip" id="user-profile-chip" title="Logged in as ${userName}">
+            <span class="user-avatar">${initials(userName)}</span>
+            <span style="font-size:0.85rem; font-weight:600;">${userName.split(" (")[0]}</span>
           </div>
 
           <!-- 2. Notification Bell Next -->
@@ -255,10 +109,23 @@
             <span class="theme-icon-moon" style="display:${currentTheme === 'dark' ? 'none' : 'inline-flex'};">${icon("M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z")}</span>
           </button>
         </div>`;
+    }
+
+    if (topnav) {
+      // Refresh user chip details if already rendered
+      const chip = document.getElementById("user-profile-chip");
+      if (chip) {
+        chip.title = `Logged in as ${userName}`;
+        const avatar = chip.querySelector(".user-avatar");
+        if (avatar) avatar.textContent = initials(userName);
+        const nameText = chip.querySelector("span:last-child");
+        if (nameText) nameText.textContent = userName.split(" (")[0];
+      }
 
       // Theme Toggle Handler
       const themeBtn = document.getElementById("theme-toggle-btn");
-      if (themeBtn) {
+      if (themeBtn && !themeBtn.dataset.bound) {
+        themeBtn.dataset.bound = "1";
         themeBtn.addEventListener("click", () => {
           const activeTheme = document.documentElement.getAttribute("data-theme") || "light";
           const newTheme = activeTheme === "dark" ? "light" : "dark";
@@ -275,60 +142,100 @@
       }
 
       const toggleBtn = document.getElementById("sidebar-toggle");
-      if (toggleBtn) {
+      if (toggleBtn && !toggleBtn.dataset.bound) {
+        toggleBtn.dataset.bound = "1";
         toggleBtn.addEventListener("click", () => {
           document.getElementById("shell-sidebar").classList.toggle("collapsed");
         });
       }
     }
 
+
+    // 2. Build Sidebar Immediately
     const sidebar = document.getElementById("shell-sidebar");
-    if (sidebar && (!isShellInitialized || !sidebar.innerHTML.trim())) {
+    if (sidebar && !sidebar.innerHTML.trim()) {
       sidebar.innerHTML = renderNav(activeKey);
     } else {
       updateActiveNav(activeKey, window.location.pathname);
     }
 
-    const staleMenubar = document.getElementById("shell-menubar");
-    if (staleMenubar) staleMenubar.remove();
-
-    document.querySelectorAll("[data-phase2]").forEach((el) => {
-      el.addEventListener("click", (e) => {
-        e.preventDefault();
-        alert("This module is part of the Phase 2 build.");
-      });
-    });
-
+    // 3. Bind Logout link immediately
     const logoutLink = document.getElementById("logout-link");
     if (logoutLink && !logoutLink.dataset.bound) {
       logoutLink.dataset.bound = "1";
-      logoutLink.addEventListener("click", async (e) => {
+      logoutLink.addEventListener("click", (e) => {
         e.preventDefault();
-        try { await window.VoyagerAPI.post("/auth/logout"); } catch (_) {}
+        try { window.VoyagerAPI.post("/auth/logout"); } catch (_) {}
         Store.clear();
-        window.location.href = "index.html";
+        window.location.replace("index.html");
       });
     }
+
+    const staleMenubar = document.getElementById("shell-menubar");
+    if (staleMenubar) staleMenubar.remove();
+  }
+
+  // Pre-render immediately on script execution to ensure the logo is visible with zero latency
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => renderShellImmediate(null));
+  } else {
+    renderShellImmediate(null);
+  }
+
+  async function init({ activeKey, onCompanyChange }) {
+    currentOnCompanyChange = onCompanyChange;
+
+    // Ensure shell & logo are rendered
+    renderShellImmediate(activeKey);
+
+    document.querySelectorAll("[data-phase2]").forEach((el) => {
+      if (!el.dataset.bound) {
+        el.dataset.bound = "1";
+        el.addEventListener("click", (e) => {
+          e.preventDefault();
+          alert("This module is part of the Phase 2 build.");
+        });
+      }
+    });
 
     // Company Selector Setup
     const select = document.getElementById("company-selector");
     if (select) {
       if (!select.dataset.loaded) {
-        const companies = await get("/companies");
-        select.innerHTML = companies.map((c) =>
-          `<option value="${c.id}" data-country="${c.country_code}">${c.name} (${c.country_code})</option>`).join("");
-        const savedId = Store.getCompanyId();
-        if (savedId && companies.some((c) => String(c.id) === savedId)) select.value = savedId;
-        else Store.setCompanyId(select.value);
-        select.dataset.loaded = "1";
-
-        select.addEventListener("change", () => {
-          Store.setCompanyId(select.value);
-          const activeOpt = select.selectedOptions[0];
-          if (currentOnCompanyChange) {
-            currentOnCompanyChange(select.value, activeOpt ? activeOpt.dataset.country : "IN");
+        try {
+          let companies = null;
+          try {
+            const cached = sessionStorage.getItem("voyager_companies");
+            if (cached) companies = JSON.parse(cached);
+          } catch (_) {}
+          if (!Array.isArray(companies) || companies.length === 0) {
+            companies = await get("/companies");
+            if (Array.isArray(companies) && companies.length > 0) {
+              try { sessionStorage.setItem("voyager_companies", JSON.stringify(companies)); } catch (_) {}
+            }
           }
-        });
+          if (Array.isArray(companies) && companies.length > 0) {
+            select.innerHTML = companies.map((c) =>
+              `<option value="${c.id}" data-country="${c.country_code}">${c.name} (${c.country_code})</option>`).join("");
+            const savedId = Store.getCompanyId();
+            if (savedId && companies.some((c) => String(c.id) === savedId)) select.value = savedId;
+            else Store.setCompanyId(select.value);
+            select.dataset.loaded = "1";
+          }
+        } catch (e) {
+          console.warn("Could not load company list:", e);
+        }
+
+        if (!select.dataset.listenerBound) {
+          select.dataset.listenerBound = "1";
+          select.addEventListener("change", () => {
+            Store.setCompanyId(select.value);
+            const activeOpt = select.selectedOptions[0];
+            if (currentOnCompanyChange) {
+              currentOnCompanyChange(select.value, activeOpt ? activeOpt.dataset.country : "IN");
+            }
+          });
+        }
       }
     }
 

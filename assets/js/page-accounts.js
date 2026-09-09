@@ -92,30 +92,22 @@
       btn.addEventListener("click", async () => {
         if (!confirm(`Delete ledger "${btn.dataset.name}"? This only works if no transactions exist for it.`)) return;
         try {
-          const apiBase = (window.VoyagerAPI && window.VoyagerAPI.API_BASE) || "/api";
-          const res = await fetch(`${apiBase}/ledgers/${btn.dataset.id}/delete/?company_id=${currentCompanyId}`, {
-            method: "DELETE",
-          });
-          const result = await res.json();
-          if (!res.ok) throw new Error(result.error || "Could not delete this ledger.");
+          await window.VoyagerAPI.del(`/ledgers/${btn.dataset.id}/delete/?company_id=${currentCompanyId}`);
           load(currentCompanyId, currentCountryCode);
         } catch (err) {
-          alert(err.message || "Could not delete this ledger. Is the backend running?");
+          alert(err.message || "Could not delete this ledger.");
         }
       });
     });
   }
 
-  const ACCOUNTS_API = `${(window.VoyagerAPI && window.VoyagerAPI.API_BASE) || "/api"}/accounts/`;
-
   async function load(companyId, country) {
     currentCompanyId = companyId; currentCountryCode = country;
     try {
-      const res = await fetch(`${ACCOUNTS_API}?company_id=${companyId}`);
-      if (!res.ok) throw new Error(`Accounts API returned ${res.status}`);
-      allAccounts = await res.json();
+      const data = await get(`/accounts/?company_id=${companyId}`);
+      allAccounts = Array.isArray(data) ? data : [];
     } catch (err) {
-      console.error("Could not load accounts from the Django API — is it running on localhost:8000?", err);
+      console.warn("Could not load accounts:", err);
       allAccounts = [];
     }
     currentCcy = currencyFor(country);
