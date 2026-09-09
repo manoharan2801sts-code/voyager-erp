@@ -26,3 +26,15 @@ services:
         sync: false
       - key: DB_NAME
         sync: false
+
+  - type: static
+    name: voyager-erp-frontend
+    buildCommand: ""
+    staticPublishPath: frontend
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://voyager-erp.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: /index.html
